@@ -2,6 +2,13 @@ if [ "x$OH_MY_ZSH_HG" = "x" ]; then
     OH_MY_ZSH_HG="hg"
 fi
 
+function prompt_char {
+	git branch >/dev/null 2>/dev/null && echo '±' && return
+	hg root >/dev/null 2>/dev/null && echo '☿' && return
+	svn info >/dev/null 2>/dev/null && echo '§' && return
+	echo ':;'
+}
+
 function virtualenv_info {
     [ $VIRTUAL_ENV ] && echo '('`basename $VIRTUAL_ENV`') '
 }
@@ -20,7 +27,12 @@ function box_name {
 
 PROMPT='
 %{$fg[magenta]%}%n%{$reset_color%} at %{$fg[yellow]%}$(box_name)%{$reset_color%} in %{$fg_bold[green]%}${PWD/#$HOME/~}%{$reset_color%}$(hg_prompt_info)$(git_prompt_info)
-$(virtualenv_info)$ '
+$(virtualenv_info)$(prompt_char) '
+
+RPROMPT='%t'
+
+fg_light_red=$'%{\e[1;31m%}'
+PS3="$fg_light_red Select file : "
 
 ZSH_THEME_GIT_PROMPT_PREFIX=" on %{$fg[magenta]%}"
 ZSH_THEME_GIT_PROMPT_SUFFIX="%{$reset_color%}"
